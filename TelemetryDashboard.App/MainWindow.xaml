@@ -1,0 +1,636 @@
+﻿<Window x:Class="TelemetryDashboard.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:TelemetryDashboard.App.Controls"
+        Title="Telemetry Dashboard"
+        Width="1180"
+        Height="760"
+        MinWidth="950"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}"
+        Foreground="{StaticResource PrimaryGreenBrush}"
+        FontFamily="Consolas">
+
+    <Window.Resources>
+
+        <!-- Interrupt labels -->
+
+        <Style x:Key="BatteryInterruptLabel"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource TelemetryLabelStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsBatteryInterferenceActive}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LinkInterruptLabel"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource TelemetryLabelStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLinkInterferenceActive}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="GpsInterruptLabel"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource TelemetryLabelStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsGpsInterferenceActive}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DescentInterruptLabel"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource TelemetryLabelStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsHighDescentActive}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="OverspeedInterruptLabel"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource TelemetryLabelStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsOverspeedActive}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Health values -->
+
+        <Style x:Key="BatteryHealthValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding BatteryHealth}" Value="Caution">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding BatteryHealth}" Value="Critical">
+                    <Setter Property="Foreground" Value="{StaticResource CriticalBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LinkHealthValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding LinkHealth}" Value="Caution">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding LinkHealth}" Value="Critical">
+                    <Setter Property="Foreground" Value="{StaticResource CriticalBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="GpsHealthValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding GpsHealth}" Value="Caution">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding GpsHealth}" Value="Critical">
+                    <Setter Property="Foreground" Value="{StaticResource CriticalBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RxStatusStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource DimGreenBrush}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRxLossActive}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="AEROSPACE TELEMETRY // FLIGHT MONITOR"
+                           FontSize="21"
+                           FontWeight="Bold"/>
+
+                <TextBlock Text="SYSTEM STATUS / LIVE DATA"
+                           Margin="0,6,0,0"
+                           FontSize="11"
+                           Foreground="{StaticResource DimGreenBrush}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+
+                <TextBlock Text="LINK // "
+                           Foreground="{StaticResource DimGreenBrush}"/>
+
+                <TextBlock Text="{Binding ConnectionStatus}"
+                           FontWeight="Bold"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- MAIN DASHBOARD -->
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="18"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- TACTICAL DISPLAY -->
+
+            <Border Grid.Column="0"
+                    Style="{StaticResource TerminalPanelStyle}">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="TACTICAL FLIGHT DISPLAY"
+                               Style="{StaticResource SectionTitleStyle}"/>
+
+                    <controls:FlightPathControl
+                        Grid.Row="1"
+                        Margin="0,10,0,0"
+                        FlightPath="{Binding FlightPath}"
+                        CurrentLatitude="{Binding Latitude}"
+                        CurrentLongitude="{Binding Longitude}"
+                        HeadingDegrees="{Binding Heading}"/>
+                </Grid>
+
+            </Border>
+
+            <!-- RIGHT SIDEBAR -->
+
+            <Grid Grid.Column="2">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- SYSTEM STATUS -->
+
+                <Border Grid.Row="0"
+                    Style="{StaticResource TerminalPanelStyle}">
+
+                <StackPanel>
+
+                    <TextBlock Text="SYSTEM STATUS"
+                            Style="{StaticResource SectionTitleStyle}"/>
+
+                    <Grid Margin="0,12,0,0">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="12"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="12"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- BATTERY -->
+
+                        <StackPanel Grid.Row="0"
+                                    Grid.Column="0">
+
+                            <TextBlock Text="BATTERY"
+                                    Style="{StaticResource BatteryInterruptLabel}"/>
+
+                            <TextBlock Text="{Binding Battery, StringFormat={}{0:F1}%}"
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Style="{StaticResource BatteryHealthValue}"/>
+
+                        </StackPanel>
+
+                        <!-- DATA LINK -->
+
+                        <StackPanel Grid.Row="0"
+                                    Grid.Column="1">
+
+                            <TextBlock Text="DATA LINK"
+                                    Style="{StaticResource LinkInterruptLabel}"/>
+
+                            <TextBlock Text="{Binding LinkQuality, StringFormat={}{0:F1}%}"
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Style="{StaticResource LinkHealthValue}"/>
+
+                        </StackPanel>
+
+                        <!-- GPS -->
+
+                        <StackPanel Grid.Row="2"
+                                    Grid.Column="0">
+
+                            <TextBlock Text="GPS SATELLITES"
+                                    Style="{StaticResource GpsInterruptLabel}"/>
+
+                            <TextBlock Text="{Binding GpsSatellites}"
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Style="{StaticResource GpsHealthValue}"/>
+
+                        </StackPanel>
+
+                        <!-- ARM -->
+
+                        <StackPanel Grid.Row="2"
+                                    Grid.Column="1">
+
+                            <TextBlock Text="ARM STATE"
+                                    Style="{StaticResource TelemetryLabelStyle}"/>
+
+                            <TextBlock Text="{Binding ArmStatus}"
+                                    FontSize="20"
+                                    FontWeight="Bold"/>
+
+                        </StackPanel>
+
+                        <!-- POSITION -->
+
+                        <StackPanel Grid.Row="4"
+                                    Grid.ColumnSpan="2">
+
+                            <TextBlock Text="POSITION"
+                                    Style="{StaticResource GpsInterruptLabel}"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="0,4,0,0">
+
+                                <TextBlock
+                                    Text="{Binding Latitude, StringFormat=LAT  {0:F6}}"
+                                    FontSize="10"
+                                    Foreground="{StaticResource MutedTextBrush}"
+                                    Margin="0,0,18,0"/>
+
+                                <TextBlock
+                                    Text="{Binding Longitude, StringFormat=LON  {0:F6}}"
+                                    FontSize="10"
+                                    Foreground="{StaticResource MutedTextBrush}"/>
+
+                            </StackPanel>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+                <!-- EVENT LOG -->
+
+                <Border Grid.Row="2"
+                        Style="{StaticResource TerminalPanelStyle}">
+
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="EVENT LOG"
+                                   Style="{StaticResource SectionTitleStyle}"
+                                   Margin="0,0,0,8"/>
+
+                        <ListBox Grid.Row="1"
+                                 ItemsSource="{Binding Alerts}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,1"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment"
+                                            Value="Stretch"/>
+                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="62"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding Timestamp, StringFormat={}{0:HH:mm:ss}}"
+                                                   FontSize="10"
+                                                   Foreground="{StaticResource DimGreenBrush}"/>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Severity}"
+                                                   FontSize="10"
+                                                   FontWeight="Bold">
+
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource PrimaryGreenBrush}"/>
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Severity}"
+                                                                     Value="Caution">
+                                                            <Setter Property="Foreground"
+                                                                    Value="{StaticResource WarningBrush}"/>
+                                                        </DataTrigger>
+
+                                                        <DataTrigger Binding="{Binding Severity}"
+                                                                     Value="Critical">
+                                                            <Setter Property="Foreground"
+                                                                    Value="{StaticResource CriticalBrush}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+
+                                        </TextBlock>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Message}"
+                                                   FontSize="10"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Foreground="{StaticResource MutedTextBrush}"/>
+                                    </Grid>
+
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- PRIMARY FLIGHT DATA -->
+
+        <Border Grid.Row="4"
+                Style="{StaticResource TerminalPanelStyle}">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="PRIMARY FLIGHT DATA"
+                           Style="{StaticResource SectionTitleStyle}"/>
+
+                <Grid Grid.Row="1"
+                      Margin="0,10,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ALTITUDE -->
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="ALTITUDE"
+                                   Style="{StaticResource DescentInterruptLabel}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Altitude, StringFormat={}{0:F0}}"
+                                       Style="{StaticResource TelemetryValueStyle}"/>
+                            <TextBlock Text="FT"
+                                       Style="{StaticResource UnitStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- AIRSPEED -->
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="AIRSPEED"
+                                   Style="{StaticResource OverspeedInterruptLabel}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Airspeed, StringFormat={}{0:F1}}"
+                                       Style="{StaticResource TelemetryValueStyle}"/>
+                            <TextBlock Text="KT"
+                                       Style="{StaticResource UnitStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- HEADING -->
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="HEADING"
+                                   Style="{StaticResource TelemetryLabelStyle}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Heading, StringFormat={}{0:F0}}"
+                                       Style="{StaticResource TelemetryValueStyle}"/>
+                            <TextBlock Text="DEG"
+                                       Style="{StaticResource UnitStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- VERTICAL SPEED -->
+
+                    <StackPanel Grid.Column="3">
+                        <TextBlock Text="VERTICAL SPEED"
+                                   Style="{StaticResource DescentInterruptLabel}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding VerticalSpeed, StringFormat={}{0:+0;-0;0}}"
+                                       Style="{StaticResource TelemetryValueStyle}"/>
+                            <TextBlock Text="FT/MIN"
+                                       Style="{StaticResource UnitStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- GROUND SPEED -->
+
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="GROUND SPEED"
+                                   Style="{StaticResource OverspeedInterruptLabel}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding GroundSpeed, StringFormat={}{0:F1}}"
+                                       Style="{StaticResource TelemetryValueStyle}"/>
+                            <TextBlock Text="KT"
+                                       Style="{StaticResource UnitStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- FLIGHT MODE -->
+
+                    <StackPanel Grid.Column="5">
+                        <TextBlock Text="FLIGHT MODE"
+                                   Style="{StaticResource TelemetryLabelStyle}"/>
+
+                        <TextBlock Text="{Binding FlightMode}"
+                                   Style="{StaticResource TelemetryValueStyle}"/>
+                    </StackPanel>
+
+                </Grid>
+
+            </Grid>
+
+        </Border>
+
+        <!-- SIMULATION INTERRUPTS -->
+
+        <Border Grid.Row="6"
+                Style="{StaticResource TerminalPanelStyle}">
+
+            <WrapPanel VerticalAlignment="Center">
+
+                <TextBlock Text="SIM INTERRUPTS //"
+                           Style="{StaticResource SectionTitleStyle}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
+
+                <Button Content="> RX LOSS"
+                        Command="{Binding InjectRxLossCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> DEGRADE LINK"
+                        Command="{Binding InjectLinkDegradationCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> LOW BATTERY"
+                        Command="{Binding SetLowBatteryCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> CRITICAL BATTERY"
+                        Command="{Binding SetCriticalBatteryCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> GPS LOSS"
+                        Command="{Binding InjectGpsLossCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> HIGH DESCENT"
+                        Command="{Binding InjectHighDescentCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> OVERSPEED"
+                        Command="{Binding InjectOverspeedCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,8,0"/>
+
+                <Button Content="> RESTORE"
+                        Command="{Binding RestoreNominalCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"/>
+
+            </WrapPanel>
+
+        </Border>
+
+        <!-- COMMAND BAR -->
+
+        <Border Grid.Row="8"
+                Style="{StaticResource TerminalPanelStyle}">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="> CONNECT"
+                        Command="{Binding ConnectCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"
+                        Margin="0,0,10,0"/>
+
+                <Button Grid.Column="1"
+                        Content="> DISCONNECT"
+                        Command="{Binding DisconnectCommand}"
+                        Style="{StaticResource TerminalButtonStyle}"/>
+
+                <TextBlock Grid.Column="3"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource RxStatusStyle}">
+
+                    <Run Text="RX // "/>
+                    <Run Text="{Binding RxStatus, Mode=OneWay}"/>
+
+                </TextBlock>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+</Window>

@@ -1,0 +1,110 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style TargetType="Window">
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+        <Setter Property="FontFamily" Value="Consolas"/>
+    </Style>
+
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+        <Setter Property="FontFamily" Value="Consolas"/>
+    </Style>
+
+    <Style x:Key="SectionTitleStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource SecondaryGreenBrush}"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+
+    <Style x:Key="TelemetryLabelStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource DimGreenBrush}"/>
+        <Setter Property="Margin" Value="0,0,0,4"/>
+    </Style>
+
+    <Style x:Key="TelemetryValueStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+    </Style>
+
+    <Style x:Key="UnitStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource SecondaryGreenBrush}"/>
+        <Setter Property="Margin" Value="5,0,0,4"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+    </Style>
+
+    <Style x:Key="TerminalPanelStyle"
+           TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderGreenBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style x:Key="TerminalButtonStyle"
+           TargetType="Button">
+
+        <Setter Property="FontFamily" Value="Consolas"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryGreenBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SecondaryGreenBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14,7"/>
+        <Setter Property="Cursor" Value="Hand"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="ButtonBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter
+                                TargetName="ButtonBorder"
+                                Property="Background"
+                                Value="{StaticResource PrimaryGreenBrush}"/>
+
+                            <Setter
+                                Property="Foreground"
+                                Value="#050805"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter Property="Opacity" Value="0.35"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
