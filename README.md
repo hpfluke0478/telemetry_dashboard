@@ -126,6 +126,10 @@ telemetry_dashboard/
 └── TelemetryDashboard.sln
 ```
 
+## Screenshot
+<img width="1162" height="749" alt="image" src="https://github.com/user-attachments/assets/7504bf37-63e4-4a63-a408-4baacd5db8d4" />
+
+
 ---
 
 ## Design Decisions
